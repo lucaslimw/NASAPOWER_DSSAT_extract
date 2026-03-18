@@ -23,12 +23,29 @@ pip install nasapower-dssat==0.1
 3. Change the configuration variables to match your study area:
 
 ```python
-latitude = -13.54        # Your latitude (in decimal degrees)
-longitude = -58.82       # Your longitude (in decimal degrees)
-start_date = '19950101'  # Start date in YYYYMMDD format
-end_date = '20241231'    # End date in YYYYMMDD format
-site_code = 'BRMT'       # Site code for DSSAT (4 characters)
+from nasapower_dssat import get_daily_nasa_power_data, save_wth_file
+import pandas as pd 
+
+# 1. Define the coordinates, site information, and the desired period
+# Example using coordinates for Mato Grosso, Brazil (BRMT)
+latitude = -13.54
+longitude = -58.82
+site_code = 'BRMT'       # 4-letter site identifier code for DSSAT
 elevation = 370          # Site elevation in meters
+start_date = '20200101'  # Start date in YYYYMMDD format
+end_date = '20231231'    # End date in YYYYMMDD format
+
+# 2. Extract the data using the packaged function
+print(f"Downloading NASA API data from {start_date} to {end_date}...")
+df_clima = get_daily_nasa_power_data(latitude, longitude, start_date, end_date)
+
+# 3. Save the .WTH file 
+if df_clima is not None:
+    # The file will be generated inside the folder specified in the last argument
+    save_wth_file(df_clima, site_code, latitude, longitude, elevation, f'./output_{site_code}')
+    
+    # If you are using a Jupyter Notebook, you can visualize the generated data:
+    display(df_clima.head())
 ```
 4. Adjust the dates within the get_daily_nasa_power_data function calls if you need a different period than the one configured in the example.
 
